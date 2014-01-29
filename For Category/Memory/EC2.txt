@@ -1,1 +1,0 @@
-ssh -i documents/ml-dev.pem ubuntu@ec2-184-169-218-99.us-west-1.compute.amazonaws.com
