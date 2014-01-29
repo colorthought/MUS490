@@ -1,0 +1,11 @@
+[7/29/13]
+
+- [COMPLETED] Added label option in NBayesFactoryParams for different tests (.5hr)
+
+- [COMPLETED] Split IMDBtraining.tsv into multiple files for separate movies, and run tests on them (.5hr) 
+
+- Investigate RandomForest training and testing class (.5hr)
+
+- Implement RandomForest training and testing class (1hr)
+
+- [COMPLETED] Make it fancy (create options, demo-ify, etc)
