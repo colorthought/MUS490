@@ -1,0 +1,7 @@
+#!/bin/csh
+# Subst14 +s ab ba
+
+setenv TESTS /c/cs223/Hwk3/Tests
+
+/usr/bin/valgrind -q \
+  ./Subst14 +s ab ba $TESTS/t01x
