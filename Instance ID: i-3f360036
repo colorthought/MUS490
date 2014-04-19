@@ -1,5 +1,0 @@
-Instance ID: i-3f360036
-
-ssh -i EC2.pem ubuntu@54.201.21.253
-
-/usrc
