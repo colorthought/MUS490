@@ -1,0 +1,14 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	],
+
+	// SublimePythonIDE
+	"settings": {
+		"python_interpreter": "/usr/bin/python"
+	}
+}

@@ -5,7 +5,6 @@ import REMIXanalyzer
 syspath = os.path.abspath(os.curdir)
 os.chdir(syspath + "/mp3")
 mp3path = os.path.abspath(os.curdir)
-print mp3path
 
 if __name__ == '__main__':
 	for file in glob.glob("*.mp3"):

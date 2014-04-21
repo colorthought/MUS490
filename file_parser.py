@@ -3,13 +3,13 @@
 """
 
 import sys
-import os
 import track
 
 
 def listMSDValues(filepath, value):
     """
-        URL getter of a given track for use in the """
+        URL getter of a given track for use in the
+    """
     f = open(filepath)
 
     valuestr = str(value)
@@ -29,3 +29,10 @@ if __name__ == '__main__':
     filepath = sys.argv[1]
     value = str(sys.argv[2])
     listMSDValues(filepath, value)
+
+
+'''
+values that the parser needs:
+    1) filepath to dataset
+    2) MSD value
+'''

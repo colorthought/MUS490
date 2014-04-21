@@ -5,10 +5,10 @@ Advisors: Ian Quin, Brian Kane
 
 1. Million Song Dataset
 	- Flatfile representation of MSD uploaded to S3 (major hurdle)
-	- Using track.py and track_getter, can list dataset as array, split into separate .dat files, easy to view, manipulate, etc.
+	- Using track.py and TrackGetter, can list dataset as array, split into separate .dat files, easy to view, manipulate, etc.
 	- Track headers are stored in track.py, easier to read in data/trackheaders
 	- Script
-		python msd_parser.py tiny.dat [args]
+		python file_parser.py tiny.dat [args]
 		(list songname in input, in this case tiny.dat, + MSD values. Good debugger)
 
 2. Preview download using 7Digital API:
@@ -16,7 +16,7 @@ Advisors: Ian Quin, Brian Kane
 	- if song_ID isn't present, searches 7digital for song name/artist name until it finds a match
 	- will be baked into mapreduce job to analyze individual songs (easy to do with MRjob)
 	- script (downloads 20 songs to localdir present in tiny.dat, also splits into training and test set):
-		python track_getter.py tiny.dat
+		python TrackGetter.py tiny.dat
 
 3. AWS integration - density test
 	- uploads script + tarball to emr nodes
