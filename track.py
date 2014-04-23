@@ -9,6 +9,7 @@
     from field 52 to the first field.
 
     A track is represented as a dictionary.
+    Used under the MIT License.
 """
 
 import sys

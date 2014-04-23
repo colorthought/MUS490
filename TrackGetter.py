@@ -1,5 +1,11 @@
 """
-    Dowloader and splitter from the flat-file database of the Million Song Dataset (MSD).
+The MIT License
+
+Copyright (c) 2014 Jacob Reske
+For use in MUS491 Senior Project, in partial fulfillment of the Yale College Music Major (INT).
+Code may be reused and distributed without permission.
+
+Description: wget and splitter from the flat-file database of the Million Song Dataset (MSD).
 """
 
 import sys

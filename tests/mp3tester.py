@@ -1,6 +1,6 @@
 import sys, os, glob
 syspath = os.path.dirname(os.path.realpath(__file__))
-mp3path = os.path.abspath('..') + '/mp3'
+mp3path = os.path.abspath('../..') + '/mp3'
 sys.path.append(os.path.abspath('..'))
 
 from analyze.Analyzer import Analyzer

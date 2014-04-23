@@ -1,9 +1,16 @@
+"""
+The MIT License
+
+Copyright (c) 2014 Jacob Reske
+For use in MUS491 Senior Project, in partial fulfillment of the Yale College Music Major (INT).
+Code may be reused and distributed without permission.
+"""
 import echonest.remix.audio as audio
 import os
 
 syspath = os.path.abspath(os.curdir)
 os.chdir("..")
-mp3path = os.path.abspath(os.curdir) + '/mp3'
+mp3path = os.path.abspath(os.curdir) + + '/../' + '/mp3'
 
 def playMP3(songID):
 	mp3 = mp3path + "/" + songID

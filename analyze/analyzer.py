@@ -1,9 +1,10 @@
 """
-    A map-reduce that calculates the density for each
-    of a set of tracks.  The track density is the average
-    number of segments per segment for a track.
-"""
+The MIT License
 
+Copyright (c) 2014 Jacob Reske
+For use in MUS491 Senior Project, in partial fulfillment of the Yale College Music Major (INT).
+Code may be reused and distributed without permission.
+"""
 from yaafelib import *
 
 import sys, os, inspect
@@ -58,13 +59,11 @@ class Analyzer:
         afp.processFile(engine, mp3)
         feats = engine.readAllOutputs()
         if self.toCSV:
-            afp.setOutputFormat('csv', '../output', {'Precision': '8'})
+            afp.setOutputFormat('csv', '../MUS490/output', {'Precision': '8'})
             if afp.processFile(engine, mp3) is False:
                 return True
             else:
                 return False
-        #[DEBUG]
-        #print(feats)
 
 
 if __name__ == '__main__':

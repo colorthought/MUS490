@@ -1,3 +1,10 @@
+"""
+The MIT License
+
+Copyright (c) 2014 Jacob Reske
+For use in MUS491 Senior Project, in partial fulfillment of the Yale College Music Major (INT).
+Code may be reused and distributed without permission.
+"""
 import sys, os, csv
 import numpy as np
 outputPath = os.path.abspath('..') + '/output'
@@ -29,7 +36,8 @@ def expectedLoglikelihood(mean1, cov1, mean2, cov2):
 
 
 
-"""Code adapted from Kulback-Liebler implementation in monomvm, a multivariate R package.
+"""Code inspired by Kulback-Liebler implementation in monomvm, a multivariate R package.
+Translated with permission.
 Copyright (C) 2007, University of Cambridge
 
 :param mean1: mean vector of first Gaussian
@@ -51,23 +59,19 @@ def kl_Divergence(mean1, cov1, mean2, cov2):
 	#return Cholesky decompositions for covariance matrices
 	chol1 = np.linalg.cholesky(cov1)
 	chol2 = np.linalg.cholesky(cov2)
-
 	#begin distance calculation
 	ld1 = 2 * np.sum(np.log10(np.diagonal(chol1)), axis=0)
 	ld2 = 2 * np.sum(np.log10(np.diagonal(chol2)), axis=0)
 
 	#calculate det
 	ldet = ld2 - ld1
-
 	#inverse from Cholesky decomposition
 	S1i = np.dot((np.linalg.inv(np.transpose(chol1))), np.linalg.inv(chol1))
-
 	tr = np.sum(np.diagonal(np.dot(S1i, cov2)), axis=0)
 	m2mm1 = np.subtract(mean2, mean1)
 	
 	#asNumeric equivalent in python...
 	qf = np.dot(np.transpose(m2mm1), np.dot(S1i, m2mm1))
-
 	r = 0.5 * (ldet + tr + qf - N)
 	return r
 
