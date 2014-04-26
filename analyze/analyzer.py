@@ -8,13 +8,13 @@ Code may be reused and distributed without permission.
 from yaafelib import *
 
 import sys, os, inspect
-from features import mfcc_1
+from features import features
 
 
 class Analyzer:
 
     SAMPLERATE = 22050
-    featureList = mfcc_1.FEATURE
+    featureList = features.FEATURE
     dataflow_file = None
     toCSV = False
 
@@ -25,12 +25,13 @@ class Analyzer:
         self.featureList = featureList
         self.toCSV = toCSV
 
+    '''
     #init for loading from an existing datafile
     def __init__(self, samplerate, dataflow_file, toCSV):
         self.SAMPLERATE = samplerate
         self.dataflow_file = dataflow_file
         self.toCSV = toCSV
-
+    '''
 
     #parses dataflow from featureList array given at __init__
     def dataFlowCreator(self):
@@ -67,9 +68,9 @@ class Analyzer:
 
 
 if __name__ == '__main__':
-    featureList = mfcc_1.FEATURE
+    featureList = features.FEATURE
     print(featureList)          #[DEBUG]
-    analyzer = analyzer(22050, featureList, True)
+    analyzer = analyzer(44100, featureList, True)
     df = analyzer.dataFlowCreator()
     mp3 = sys.argv[1]
     analyzer.process_mp3(mp3, df)

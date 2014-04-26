@@ -1,4 +1,4 @@
 HOME=$(pwd)
 #cd $HOME/..
 #pwd
-python mp3tester.py
+python clusterTest.py --log=INFO

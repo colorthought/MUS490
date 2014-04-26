@@ -13,24 +13,24 @@ class MeanCovMatrix:
 
 	tablesize = None
 	table = [[] for k in range(3)]
-
+	defaultMean = np.array([1, 2, 3])
+	defaultCov = np.array([1, 2, 3])
 
 	def __init__(self, tablesize):		
-		self.tablesize = tablesize
-		'''
+		self.tablesize = tablesize	
 		for i in range(tablesize):
-			self.table[0].append(0)
-			self.table[1].append(0)
-			self.table[2].append(0)
-		'''
+			self.table[1].append(self.defaultMean)
+			self.table[2].append(self.defaultCov)
+
 
 	def addmp3ToTable(self, index, mp3):
 		self.table[0].append(mp3)
 
 
 	def addToTable(self, index, mean, cov):
-		self.table[1].append(mean)
-		self.table[2].append(cov)
+		#print(mean)							#[DEBUG]
+		self.table[1][index] = mean
+		self.table[2][index] = cov
 
 
 	def recallfromTable(self, index):

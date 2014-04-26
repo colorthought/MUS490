@@ -1,0 +1,8 @@
+Log/To Do (4- 25)
+
+- Commit code (lol)
+- Generalize .mp3 folder structure for multiple datasets
+- Sort clusters by size and index numbers at the end of either algorithm (need a function)
+- Find a good method of normalizing KL-divergence
+- Test using autoweight algorithm
+- Implement Renato Cordeiro de Amorim's Minkowski Metric 

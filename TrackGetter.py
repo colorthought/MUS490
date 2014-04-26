@@ -52,7 +52,6 @@ class TrackGetter:
             URL getter of a given track for use in the """
         f = open(self.filepath)
 
-        mp3path = self.makefolder('mp3')
         for which, line in enumerate(f):   
             self.downloadtrack(track, line, mp3path)
 

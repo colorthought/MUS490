@@ -1,0 +1,93 @@
+log (04-26-14)
+
+Starting kMeans clustering...
+Weights:
+[1, 0, 0]
+
+[[0], [5], [1, 2, 3, 4, 6, 7, 8]]
+Traceback (most recent call last):
+  File "FeatureFactory.py", line 119, in <module>
+    FeatureFactory.Cluster_100(fe, k, w)
+  File "FeatureFactory.py", line 88, in Cluster_100
+    clusters = km.run()
+  File "/Users/Jacob/git/MUS490/analyze/learning/KMeansGaussian.py", line 144, in run
+    self.clusters[rand].remove()
+TypeError: remove() takes exactly one argument (0 given)
+jacob:analyze Jacob$ python FeatureFactory.py --log=INFO
+NumFeatures: 3
+Now Processing feature: mfcc
+there are 9 files to be processed.
+01 15 Step
+01 All At Once
+01 Blood Bank
+01 Boom!
+01 Bullet Proof
+01 Burning The River
+01 Changes in the Weather
+01 Come Together
+01 Curs in the Weeds
+Now Processing feature: mfcc_d1
+there are 9 files to be processed.
+01 15 Step
+01 All At Once
+01 Blood Bank
+01 Boom!
+01 Bullet Proof
+01 Burning The River
+01 Changes in the Weather
+01 Come Together
+01 Curs in the Weeds
+Now Processing feature: mfcc_d2
+there are 9 files to be processed.
+01 15 Step
+01 All At Once
+01 Blood Bank
+01 Boom!
+01 Bullet Proof
+01 Burning The River
+01 Changes in the Weather
+01 Come Together
+01 Curs in the Weeds
+
+-------------------------------
+
+Starting kMeans clustering...
+Weights:
+[1, 0, 0]
+
+[[0, 1, 3, 5, 6, 7, 8], [2], [4]]
+[[2], [2, 8], [0, 1, 3, 4, 5, 6, 7]]
+[[2, 4], [0, 1, 3, 5, 6, 7, 8], [0]]
+[[1, 2, 3, 4, 5, 6, 8], [7], [0]]
+[[1, 2, 4, 8], [3, 5, 6, 7], [0]]
+[[2, 8], [1, 3, 4, 5, 6, 7], [0]]
+[[1, 2, 8], [3, 4, 5, 6, 7], [0]]
+[[2, 8], [1, 3, 4, 5, 6, 7], [0]]
+[[1, 2, 8], [3, 4, 5, 6, 7], [0]]
+[[2, 8], [1, 3, 4, 5, 6, 7], [0]]
+[[1, 2, 8], [3, 4, 5, 6, 7], [0]]
+[[2, 8], [1, 3, 4, 5, 6, 7], [0]]
+[[1, 2, 8], [3, 4, 5, 6, 7], [0]]
+[[2, 8], [1, 3, 4, 5, 6, 7], [0]]
+[[1, 2, 8], [3, 4, 5, 6, 7], [0]]
+[[2, 8], [1, 3, 4, 5, 6, 7], [0]]
+[[1, 2, 8], [3, 4, 5, 6, 7], [0]]
+[[2, 8], [1, 3, 4, 5, 6, 7], [0]]
+[[1, 2, 8], [3, 4, 5, 6, 7], [0]]
+[[2, 8], [1, 3, 4, 5, 6, 7], [0]]
+
+
+Cluster #1:
+01 Blood Bank
+01 Curs in the Weeds
+
+Cluster #2:
+01 All At Once
+01 Boom!
+01 Bullet Proof
+01 Burning The River
+01 Changes in the Weather
+01 Come Together
+
+Cluster #3:
+01 15 Step
