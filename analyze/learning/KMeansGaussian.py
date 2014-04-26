@@ -68,7 +68,7 @@ class KMeansGaussian():
 					for y in xrange(x + 1, len(centroids_init)):
 						row = centroids_init[x]
 						col = centroids_init[y]
-						if self.featureSet[feature][3][row][col] < avgDistance / 2:
+						if self.featureSet[feature][2][row][col] < avgDistance / 2:
 							#print("Centroids too close together. Restarting...")	#[DEBUG]
 							badcentroids = 1
 				if badCentroids == 1: break
@@ -88,7 +88,7 @@ class KMeansGaussian():
 		for x in xrange(self.featureSet.filecount):
 			cdist = []
 			for y in xrange(self.k):
-				cdist.append(self.centroid_distance(clusters_old[y], x, self.featureSet.weightvector))
+				cdist.append(self.centroid_distance(clusters_old[y], x, self.featureSet.weightvector))								#WARNING REFERENCES WEIGHTVECTOR!
 			logging.debug(cdist)													#[DEBUG]
 
 			#calculate minimum distance between separate bins
@@ -120,7 +120,7 @@ class KMeansGaussian():
 	def distance(self, x1, x2, weights):
 		dist = 0
 		for i in xrange(self.featureSet.num_features):
-			div = self.featureSet[i][3]
+			div = self.featureSet[i][2]
 			dist += float(div[x1][x2]) * weights[i]
 		return dist
 

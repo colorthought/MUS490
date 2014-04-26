@@ -6,9 +6,10 @@ For use in MUS491 Senior Project, in partial fulfillment of the Yale College Mus
 Code may be reused and distributed without permission.
 """
 from yaafelib import *
-
 import sys, os, inspect
 from features import features
+
+outputpath = os.path.abspath('..') + '/output'
 
 
 class Analyzer:
@@ -60,7 +61,7 @@ class Analyzer:
         afp.processFile(engine, mp3)
         feats = engine.readAllOutputs()
         if self.toCSV:
-            afp.setOutputFormat('csv', '../MUS490/output', {'Precision': '8'})
+            afp.setOutputFormat('csv', outputpath, {'Precision': '8'})
             if afp.processFile(engine, mp3) is False:
                 return True
             else:

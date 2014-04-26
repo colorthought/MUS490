@@ -24,22 +24,34 @@ class FeatureFactory:
 	
 	SAMPLERATE = 22050
 	samplerate_alt = 44100
-	featureList = features.FEATURE
-	num_features = len(featureList)
 	mp3dirs = []
+	featureList = None
+	num_features = 0
+	k = 0
+	times = 0
+	f = None
 
-	def __init__(self, samplerate, featureList, mp3dirs):
+	def __init__(self, samplerate, featureList, mp3dirs, k, times, run_before):
 		self.SAMPLERATE = samplerate
 		self.featureList = featureList
 		self.num_features = len(featureList)
 		self.mp3dirs = mp3dirs
+		self.k = k
+		self.times = times
+
+		#do mp3_to_feature_vectors and brand new FeatureSet object if this is a new dataset/feature combo
+		if run_before == False:
+			self.mp3_to_feature_vectors()
+			self.f = FeatureSet(self.featureList, False)
+		#else skip conversion, load from file
+		else:
+			self.f = FeatureSet(self.featureList, True)
 
 
 	"""Generic factory function for generating feature datafiles (.csv) using Analyzer.py.
 	featureList and SAMPLERATE required.
 	"""
 	def mp3_to_feature_vectors(self):
-
 		#checks for and removes existing feature vector files
 		os.chdir(outputpath)
 		fileList = glob.glob("*.csv")
@@ -52,7 +64,6 @@ class FeatureFactory:
 		failed_mp3 = []
 		failed_dir = []
 		i = 0
-
 		for path in self.mp3dirs:
 			logging.info("Changed path: %s"%(path))
 			for dirpath, dirnames, filenames in os.walk(path):
@@ -61,8 +72,8 @@ class FeatureFactory:
 					if theanalyzer.process_mp3(filename, df) == False:
 						failed_mp3.append(filename)
 					i +=1
-
 		#second attempt with a separate sample rate (soon deprecated)
+		"""
 		try:
 			for filename in xrange(len(failed_mp3)):
 				os.chdir(failed_dir[filename])
@@ -72,6 +83,7 @@ class FeatureFactory:
 				i += 1
 		except IOError:
 			print("that didn't work either...")
+		"""
 		os.chdir(syspath)
 		print "wrote %d files." % i
 
@@ -79,19 +91,18 @@ class FeatureFactory:
 	"""Factory function for implementing MFCC-to-divergence-matrix path.
 		Deprecated by CreateMeanCovDiv as of 4-23-14
 	"""
-	def Cluster_100(self, feature, k, weights, times, auto):
-		f = FeatureSet(feature)
-		f.addAllDivCov()
+	def Cluster_100(self, weights, auto):
 		w = weights
+		self.f.updateWeights(w)
 
 		clusterlist = []
 		clustercount = []
-		for cl in range(0, times):
+		for cl in range(0, self.times):
 			w2 = copy.deepcopy(w)
-			f2 = copy.deepcopy(f)
-			km = KMeansGaussian(k, 20, "random", False, f2)
+			f2 = copy.deepcopy(self.f)
+			km = KMeansGaussian(self.k, 20, "random", False, f2)
 			if auto == True:
-				km = KMeansHeuristic(w2, k, 20, "random", False, f2)
+				km = KMeansHeuristic(w2, self.k, 20, "random", False, f2)
 			print
 			print("-------------------------------")
 			print
@@ -109,12 +120,12 @@ class FeatureFactory:
 		logging.info(clustercount)
 
 		print
-		for x in xrange(k):
+		for x in xrange(self.k):
 			print
 			print 'Cluster #%d:' % (x + 1)
 			for y in xrange(len(finalcluster[x])):
 				val = finalcluster[x][y]				
-				mp3result = f.manifest[val]
+				mp3result = self.f.manifest[val]
 				print '%s' % mp3result
 		return finalcluster
 
@@ -123,6 +134,7 @@ if __name__ == '__main__':
 	w = [1, 0, 0]
 	k = 10
 	fe = features.FEATURE
+	times = 100
 	mp3dirs = ["5Albums"]
 
 	# test argument parser for debug flags
@@ -133,11 +145,8 @@ if __name__ == '__main__':
 		logging.basicConfig(format='%(message)s', level=logging.INFO)
 	elif args.log == 'DEBUG':
 		logging.basicConfig(format='%(message)s', level=logging.DEBUG)
-	FeatureFactory = FeatureFactory(44100, fe, mp3dirs)
-	#FeatureFactory.mp3_to_feature_vectors()
+	FeatureFactory = FeatureFactory(44100, fe, mp3dirs, k, times, False)
+	
 	#check if directory is empty-- should implement try/except later.
 	if os.listdir(outputpath):
-		finalcluster = FeatureFactory.Cluster_100(fe, k, w, 1, False)
-
-
-
+		finalcluster = FeatureFactory.Cluster_100(w, False)

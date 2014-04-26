@@ -1,7 +1,7 @@
 """
 The MIT License
 
-Copyright (c) 2014 Jacob Reske
+Copyright (c) 2014 Jacob Reske.
 For use in MUS491 Senior Project, in partial fulfillment of the Yale College Music Major (INT).
 Code may be reused and distributed without permission.
 """
@@ -11,43 +11,49 @@ from MeanCovMatrix import MeanCovMatrix
 import stats
 from features import features
 outputpath = os.path.abspath('..') + '/output'
-
+featurepath = os.path.abspath(outputpath) + '/features'
 
 class FeatureSet(list):
 
 	manifest = []
 	filecount = 0
-	featureList = features.FEATURE
-	num_features = len(featureList)
+	featureList = None
+	num_features = 0
 	weightvector = []
-	DefaultMeanCovMatrix = None
+	#DefaultMeanCovMatrix = None
 	DefaultDivMatrix = None
 
-
-	def __init__(self, featureList):
+	def __init__(self, featureList, fromFile):
+		#append list for every feature in featureList and populates with featurenames
 		self.featureList = featureList
 		self.num_features = len(featureList)
-		print "NumFeatures: %d" % self.num_features
-		self.initialize(featureList)
-
-		#populates weight vector with 1/num_features by default
-		if not self.weightvector:
-			for x in xrange(self.num_features):
-				self.weightvector.append(float(1) / float(self.num_features))
-			self.updateWeights(self.weightvector)
-		#print(self)
-
-
-	def initialize(self, featureList):
-		#append list for every feature in featureList and populates with featurenames
+		#print "NumFeatures: %d" % self.num_features
 		for x in xrange(self.num_features):
 			self.append([])
 			self[x] = []
 			featurename = features.getExtension(self.featureList, x)
 			self[x].append(featurename)
 			self[x].append(1)
-			self[x].append(copy.deepcopy(self.DefaultMeanCovMatrix))
+			#self[x].append(copy.deepcopy(self.DefaultMeanCovMatrix))
 			self[x].append(copy.deepcopy(self.DefaultDivMatrix))
+
+			if fromFile == True:
+				os.chdir(featurepath)
+				with open(featurename + '.csv') as f:
+					div = np.genfromtxt(f, delimiter=',')
+					self[x][2] = div
+					print(self[x][2])
+		if fromFile == True:
+			self.manifestFromFile()
+		else:
+			self.addAllDivCov()
+			self.writeToFile()
+
+		#populates weight vector with 1/num_features by default
+		if not self.weightvector:
+			for x in xrange(self.num_features):
+				self.weightvector.append(float(1) / float(self.num_features))
+			self.updateWeights(self.weightvector)
 
 
 	"""Changes weight vectors and adds them to FeatureSet accordingly.
@@ -72,23 +78,18 @@ class FeatureSet(list):
 		return 1
 
 
+	"""Brief check on DivMatrix dimensions and manifest size.
+	"""
 	def isValid(self):
 		#print(self)
 		try:
-			size_old = self[0][3].size
+			size_old = self[0][2].size
 		except: return False
 		for x in xrange(self.num_features):
-			size_new = self[x][3].size
+			size_new = self[x][2].size
 			if size_old != size_new: return False
 			size_old = size_new 
 		return True
-
-
-	def writeToCSV(self):
-		os.chdir(outputpath)
-		with open("featureset.csv", "wb") as f:
-			writer = csv.writer(f)
-			writer.writerows(self)
 
 
 	"""Adds all Mean, Covariance, and Divergence matrixes to the FetureSet object.
@@ -107,8 +108,8 @@ class FeatureSet(list):
 		if self[index][1] == 0:
 			return 0
 		cov, div = self.CreateMeanCovDiv(index)
-		self[index][2] = cov
-		self[index][3] = div
+		#self[index][2] = cov
+		self[index][2] = div
 		return 1
 
 
@@ -144,7 +145,7 @@ class FeatureSet(list):
 				mean1, cov1 = meancovmatrix.recallfromTable(row)
 				mean2, cov2 = meancovmatrix.recallfromTable(col)
 				divergence = stats.kl_DivergenceSymm(mean1, cov1, mean2, cov2)
-				div_format = abs(int(divergence * 100))
+				div_format = int(divergence * 100)
 				divMatrix[row][col] = div_format
 
 		logging.debug(divMatrix)
@@ -165,9 +166,24 @@ class FeatureSet(list):
 		return filecount
 
 
+	"""Defines manifest[] and filecount from file
+	"""
+	def manifestFromFile(self):
+		#clears active manifest and filecount
+		self.manifest = []
+		self.filecount = 0
+		os.chdir(featurepath)
+		with open("manifest") as m:
+			self.manifest = m.read().splitlines()
+			self.filecount = len(self.manifest)
+
+
+	"""Averages the values of all rows and columns of the DivMatrix.
+	Used in KMeansHeuristic and KMeansGaussian to select random points with a minumum distance heuristic.
+	"""
 	def divMatrixAvg(self, featureIndex):
 		#calculate average of all divmatrix values
-		div = self[featureIndex][3]
+		div = self[featureIndex][2]
 		sum = 0
 		for x in xrange(len(div[0])):
 			for y in xrange(len(div[0])): sum += div[x][y]
@@ -176,16 +192,37 @@ class FeatureSet(list):
 		return avgDistance
 
 
+	"""Implements writing FeatureSet to files.
+	 Useful for running clustering on file-feature combos that have been attempted before.
+	 """
+	def writeToFile(self):
+		#removes all prior features in featurepath
+		try:
+			os.chdir(featurepath)
+			fileList = glob.glob("*.csv")
+			for f in fileList:
+				os.remove(f)
+			#for each feature, write a different file
+			for feature in xrange(self.num_features):
+				featurename = self[feature][0]
+				div = self[feature][2]
+				np.savetxt(featurename + '.csv', div, delimiter=',')
+			#writes file manifest as manifest.csv
+			with open('manifest', 'w') as f:
+				for item in self.manifest:
+					f.write("%s\n" % item)
+			return True
+		except:
+			print("ERROR: IO issue [DEBUG]")
+
 
 if __name__ == '__main__':
-	f = FeatureSet(features.FEATURE2)
-	f.addAllDivCov()
+	f = FeatureSet(features.FEATURE, True)
 	w = [.2, .3, .5]
 	f.updateWeights(w)
 	print(f.isValid())
-	f.writeToCSV()
 
 """
 	COL
-ROW	feature 	Weight		MeanCovMatrix			DivMatrix             
+ROW	feature 	Weight		DivMatrix             (#MeanCovMatrix no longer stored)
 """
