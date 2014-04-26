@@ -56,7 +56,8 @@ if __name__ == '__main__':
 				mp3list = []
 				break
 			mp3list[mp3] = fullpath
-	print(mp3list)
+
+	#options for FeatureSet
 	k = int(raw_input('Number of clusters (k): ') or 10)
 	t = int(raw_input('Number of iterations: ') or 1)
 	fe = None

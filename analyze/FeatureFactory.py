@@ -13,7 +13,6 @@ import numpy as np
 from FeatureSet import FeatureSet
 from learning.KMeansGaussian import KMeansGaussian, KMeansHeuristic
 syspath = os.path.dirname(os.path.realpath(__file__))
-mp3path = os.path.abspath('../..') + '/mp3'
 outputpath = os.path.abspath('..') + '/output'
 sys.path.append(os.path.abspath('..'))
 
@@ -23,7 +22,6 @@ from analyze.features import features
 
 class FeatureFactory:
 	
-	songpath = mp3path
 	SAMPLERATE = 22050
 	samplerate_alt = 44100
 	featureList = features.FEATURE
@@ -50,20 +48,27 @@ class FeatureFactory:
 		#new generic Analyzer and dataflow
 		theanalyzer = Analyzer(self.SAMPLERATE, self.featureList, True)
 		df = theanalyzer.dataFlowCreator()
-		os.chdir(mp3path)
-		#dynamic list of mp3s that generate exceptions with current featureList
-		Failedmp3 = []
+		
+		failed_mp3 = []
+		failed_dir = []
 		i = 0
-		for mp3 in glob.glob("*.mp3"):
-			if theanalyzer.process_mp3(mp3, df) == False:
-				Failedmp3.append(mp3)
-				i +=1
+
+		for path in self.mp3dirs:
+			logging.info("Changed path: %s"%(path))
+			for dirpath, dirnames, filenames in os.walk(path):
+				for filename in [f for f in filenames if f.endswith(".mp3")]:
+					os.chdir(dirpath)
+					if theanalyzer.process_mp3(filename, df) == False:
+						failed_mp3.append(filename)
+					i +=1
+
 		#second attempt with a separate sample rate (soon deprecated)
 		try:
-			for mp3 in Failedmp3:
+			for filename in xrange(len(failed_mp3)):
+				os.chdir(failed_dir[filename])
 				theanalyzer = Analyzer(self.samplerate_alt, self.featureList, True)
 				df = theanalyzer.dataFlowCreator()
-				theanalyzer.process_mp3(mp3, df)
+				theanalyzer.process_mp3(failed_mp3[filename], df)
 				i += 1
 		except IOError:
 			print("that didn't work either...")
@@ -118,7 +123,7 @@ if __name__ == '__main__':
 	w = [1, 0, 0]
 	k = 10
 	fe = features.FEATURE
-	mp3dirs = ["5\ Random\ Albums\ Dataset"]
+	mp3dirs = ["5Albums"]
 
 	# test argument parser for debug flags
 	parser = argparse.ArgumentParser()
