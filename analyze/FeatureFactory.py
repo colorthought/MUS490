@@ -13,7 +13,7 @@ import numpy as np
 from FeatureSet import FeatureSet
 from learning.KMeansGaussian import KMeansGaussian, KMeansHeuristic
 syspath = os.path.dirname(os.path.realpath(__file__))
-outputpath = os.path.abspath('..') + '/output'
+outputpath = os.path.abspath('../..') + '/output'
 sys.path.append(os.path.abspath('..'))
 
 from analyze.Analyzer import Analyzer
@@ -22,6 +22,7 @@ from analyze.features import features
 
 class FeatureFactory:
 	
+	cluster = []
 	SAMPLERATE = 22050
 	samplerate_alt = 44100
 	mp3dirs = []
@@ -32,6 +33,7 @@ class FeatureFactory:
 	f = None
 
 	def __init__(self, samplerate, featureList, mp3dirs, k, times, run_before):
+		self.cluster = []
 		self.SAMPLERATE = samplerate
 		self.featureList = featureList
 		self.num_features = len(featureList)
@@ -91,7 +93,7 @@ class FeatureFactory:
 	"""Factory function for implementing MFCC-to-divergence-matrix path.
 		Deprecated by CreateMeanCovDiv as of 4-23-14
 	"""
-	def Cluster_100(self, weights, auto):
+	def cluster_100(self, weights, auto):
 		w = weights
 		self.f.updateWeights(w)
 
@@ -127,6 +129,7 @@ class FeatureFactory:
 				val = finalcluster[x][y]				
 				mp3result = self.f.manifest[val]
 				print '%s' % mp3result
+		this.cluster = finalcluster
 		return finalcluster
 
 
@@ -149,4 +152,4 @@ if __name__ == '__main__':
 	
 	#check if directory is empty-- should implement try/except later.
 	if os.listdir(outputpath):
-		finalcluster = FeatureFactory.Cluster_100(w, False)
+		finalcluster = FeatureFactory.cluster_100(w, False)

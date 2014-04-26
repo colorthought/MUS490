@@ -9,7 +9,7 @@ from yaafelib import *
 import sys, os, inspect
 from features import features
 
-outputpath = os.path.abspath('..') + '/output'
+outputpath = os.path.abspath('../..') + '/output'
 
 
 class Analyzer:

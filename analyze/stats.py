@@ -7,7 +7,7 @@ Code may be reused and distributed without permission.
 """
 import sys, os, csv
 import numpy as np
-outputPath = os.path.abspath('..') + '/output'
+outputPath = os.path.abspath('../..') + '/output'
 
 
 def csvToMatrix(filename):

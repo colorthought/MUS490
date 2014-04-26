@@ -9,7 +9,7 @@ Module: clusterTest.py
 import sys, os, glob, argparse, logging
 syspath = os.path.dirname(os.path.realpath(__file__))
 mp3path = os.path.abspath('../..') + '/mp3'
-outputpath = os.path.abspath('..') + '/output'
+outputpath = os.path.abspath('../..') + '/output'
 sys.path.append(os.path.abspath('../analyze'))
 
 from Analyzer import Analyzer
@@ -20,7 +20,7 @@ from features import features
 def test_cluster(w, auto):
 	#check if directory is empty-- should implement try/except later.
 	if os.listdir(outputpath):
-		finalcluster = FeatureFactory.Cluster_100(w, auto)
+		finalcluster = FeatureFactory.cluster_100(w, auto)
 
 
 if __name__ == '__main__':

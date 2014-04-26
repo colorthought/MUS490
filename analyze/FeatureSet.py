@@ -10,7 +10,7 @@ import numpy as np
 from MeanCovMatrix import MeanCovMatrix
 import stats
 from features import features
-outputpath = os.path.abspath('..') + '/output'
+outputpath = os.path.abspath('../..') + '/output'
 featurepath = os.path.abspath(outputpath) + '/features'
 
 class FeatureSet(list):
@@ -115,7 +115,7 @@ class FeatureSet(list):
 
 	"""Factory function for obtaining mean, covariance, and divergence matrices from a 
 		generic feature in a featurelist.
-		Replaces Cluster_100 as of 4-23-14
+		Replaces cluster_100 as of 4-23-14
 	"""
 	def CreateMeanCovDiv(self, featureIndex):
 		featurename = self[featureIndex][0]
