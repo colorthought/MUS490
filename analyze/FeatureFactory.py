@@ -11,7 +11,7 @@ import os.path
 from operator import itemgetter
 import numpy as np
 from FeatureSet import FeatureSet
-from learning.KMeansGaussian import KMeansGaussian, KMeansHeuristic
+from learning.KMeans import KMeansGaussian, KMeansHeuristic
 from learning.ClusterFactory import ClusterFactory
 syspath = os.path.dirname(os.path.realpath(__file__))
 outputpath = syspath + '/../..' + '/output'
@@ -86,11 +86,12 @@ class FeatureFactory:
 	"""
 	def cluster_100(self, weights, auto):
 		clusterFactory = ClusterFactory(self.f, self.k, weights, self.euclidean)
-		c = clusterFactory.create_defaultCluster()
-		if self.times == 1:
-			cluster = clusterFactory.run_cluster(c)
-		else: clusterFactory.iterate_cluster(self.times)
-		clusterFactory.print_cluster()
+		#c = clusterFactory.create_defaultCluster()
+		#if self.times == 1:
+		#	cluster = clusterFactory.run_cluster(c)
+		#else: clusterFactory.iterate_cluster(self.times)
+		#clusterFactory.print_cluster()
+		clusterFactory.auto_k()
 
 
 if __name__ == '__main__':

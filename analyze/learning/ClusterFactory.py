@@ -5,11 +5,11 @@ Copyright (c) 2014 Jacob Reske
 For use in MUS491 Senior Project, in partial fulfillment of the Yale College Music Major (INT).
 Code may be reused and distributed without permission.
 """
-import sys, os, glob, logging, copy
+import sys, os, glob, logging, copy, math
 sys.path.append(os.path.abspath('..'))
 from FeatureSet import FeatureSet
 from operator import itemgetter
-from KMeansGaussian import KMeansGaussian, KMeansHeuristic
+from KMeans import KMeansGaussian, KMeansHeuristic
 from features import features
 
 
@@ -44,11 +44,11 @@ class ClusterFactory:
 
 
 	#create cluster with defined parameters; returns cluster object
-	def create_customCluster(self, k, weight, auto, euclidean):
+	def create_customCluster(self, k, iterations, weight, auto, euclidean):
 		f2 = copy.deepcopy(self.featureSet)
-		if auto_weights == True:
-			return KMeansHeuristic(weight, k, 20, "random", False, f2, euclidean)
-		else: return KMeansGaussian(k, 20, "random", False, f2, euclidean)
+		if self.auto_weights == True:
+			return KMeansHeuristic(weight, k, iterations, "random", False, f2, euclidean)
+		else: return KMeansGaussian(k, iterations, "random", False, f2, euclidean)
 
 
 	#run cluster; returns cluster[] list
@@ -63,11 +63,10 @@ class ClusterFactory:
 
 	#run cluster a number of times; use heuristic to determine "best" cluster result
 	#returns cluster[] list
-	def iterate_cluster(self, times):
+	def iterate_cluster(self, times, km):
 		clusterlist = []
 		clustercount = []
 		for cl in range(0, times):
-			km = self.create_defaultCluster()
 			print("Iteration #%d" %(cl + 1))
 			cluster = self.run_cluster(km)
 			if cluster not in clusterlist:
@@ -94,13 +93,50 @@ class ClusterFactory:
 				print '%s' % mp3result
 
 
-	#returns the distortion value of a given cluster
-	def find_distortion(self):
-		return 1		
+	"""Computes the Squared Error Distoriton for a given (finished) KMeans object.
+	Squared Error Distortion is defined as follows:
+	Let V = {v1, v2,..., vn} be the set of n data points and X be the set of centroids.
+	d(vi, X) = min(d(vi, xi)) for xi in X
+	the Squared Error Distortion d(V,X) = SUM(d(vi, X)^2) / n for 1 <= i <= n
+	"""
+	def find_sqe_distortion(self, km):
+		n = self.featureSet.filecount
+		total = 0
+		for cluster_i in xrange(len(km.clusters)):
+			for point in km.clusters[cluster_i]:
+				distance = km.centroid_distance(km.clusters[cluster_i], point, self.featureSet.weightvector)
+				total += math.pow(distance, 2)
+				return float(total) / float(n)
+
 
 	def auto_k(self):
-		return 1
+		p = 3
+		Y = -float((float(p) / 2))
+		D = []
+		D.append(0)
+		for k in range(1, self.featureSet.filecount / 10):
+			print "Iteration: %s" %(k)
+			km = self.create_customCluster(k, 5, self.weight, self.auto_k, self.euclidean)
+			self.run_cluster(km)
+			d = self.find_sqe_distortion(km)
+			print "distortion = %f" %(d)
+			D.append(float(math.pow(d, Y)))
+			print(D)
+		J = []
+		J.append(0)
+		for i in range(1, len(D)):
+			J.append(D[i] - D[i - 1])
+		maxval = max(J)
+		best_k = max(enumerate(J), key=itemgetter(1))[0]
+		print(J)
+		print "best k = %d" %(best_k)
 
+		bkm = self.create_customCluster(best_k, 20, self.weight, self.auto_k, self.euclidean)
+		cluster = self.iterate_cluster(30, bkm)
+		self.print_cluster()
+
+	def run_with_settings():
+		return 1
 
 if __name__ == '__main__':
 	w = [1, 0, 0]

@@ -134,15 +134,17 @@ class KMeansGaussian():
 		dist = 0
 		for i in xrange(self.featureSet.num_features):
 			div = self.featureSet[i][2]
-			dist += math.pow((float(div[x1][x2] * weights[i])), 2)
+			dist += math.pow(float(div[x1][x2] * float(weights[i])), 2)
 		return math.sqrt(dist)
 
 
 	"""Run function for simple version of KMeansGaussian algorithm
 	"""
 	def run(self):
-		initial = self.start_centroids()
+		self.clusters = []
+		for x in xrange(self.k): self.clusters.append([])
 
+		initial = self.start_centroids()
 		#add initial centroids to each of the three lists
 		for x in xrange(self.k): self.clusters[x].append(initial[x])
 
