@@ -5,7 +5,7 @@ Copyright (c) 2014 Jacob Reske
 For use in MUS491 Senior Project, in partial fulfillment of the Yale College Music Major (INT).
 Code may be reused and distributed without permission.
 """
-import sys, os, random, logging, copy
+import sys, os, random, logging, copy, math
 from operator import mul
 from fractions import Fraction
 import numpy as np
@@ -22,14 +22,16 @@ class KMeansGaussian():
 	clusters = []
 	precompute = False
 	featureSet = None
+	euclidean = False
 
-	def __init__(self, k, max_iter, init, precompute, featureSet):
+	def __init__(self, k, max_iter, init, precompute, featureSet, euclidean):
 		self.k = k
 		self.max_iter = max_iter
 		self.init = init
 		self.precompute = precompute
 		self.featureSet = featureSet
 		self.clusters = []
+		self.euclidean = euclidean
 
 		for x in xrange(k): self.clusters.append([])
 
@@ -109,7 +111,8 @@ class KMeansGaussian():
 		total = 0
 		clusterCount = 0
 		for x in xrange(len(cluster)):
-			total += self.distance(point, cluster[x], weight)
+			if self.euclidean == True: total += self.euclideanAvgDistance(point, cluster[x], weight)
+			else: total += self.avgDistance(point, cluster[x], weight)
 			clusterCount += 1
 		return total / clusterCount
 
@@ -117,12 +120,23 @@ class KMeansGaussian():
 	"""Calculates the "distance" between two given points using the FeatureSet object.
 	The distance between points x1 and x2 is defined as the weighted average of each feature's DivMatrix(x1, x2) compare.
 	"""
-	def distance(self, x1, x2, weights):
+	def avgDistance(self, x1, x2, weights):
 		dist = 0
 		for i in xrange(self.featureSet.num_features):
 			div = self.featureSet[i][2]
 			dist += float(div[x1][x2]) * weights[i]
 		return dist
+
+
+	"""Euclidean version of avgDistance function above.
+	"""
+	def euclideanAvgDistance(self, x1, x2, weights):
+		dist = 0
+		for i in xrange(self.featureSet.num_features):
+			div = self.featureSet[i][2]
+			dist += math.pow((float(div[x1][x2] * weights[i])), 2)
+		return math.sqrt(dist)
+
 
 	"""Run function for simple version of KMeansGaussian algorithm
 	"""
@@ -150,7 +164,6 @@ class KMeansGaussian():
 		return self.clusters
 
 
-
 """
 Experimental Heuristic for low-dim clustering:
 In each round of clustering [!],
@@ -167,8 +180,8 @@ class KMeansHeuristic(KMeansGaussian):
 
 	defaultWeight = None
 
-	def __init__(self, weightvec, k, max_iter, init, precompute, featureSet):
-		KMeansGaussian.__init__(self, k, max_iter, init, precompute, featureSet)
+	def __init__(self, weightvec, k, max_iter, init, precompute, featureSet, euclidean):
+		KMeansGaussian.__init__(self, k, max_iter, init, precompute, featureSet, euclidean)
 		weight = Weight(weightvec)
 		weight.gen_subsets()
 		weight.clear_weightscore()
@@ -231,9 +244,6 @@ class KMeansHeuristic(KMeansGaussian):
 			minimum = min(enumerate(cdist), key=itemgetter(1))[0]
 			#add to the list with the smallest distance from centroid
 			self.clusters[minimum].append(x)
-
-
-
 
 
 """Weight object.
@@ -325,20 +335,24 @@ class Weight:
 		self.weightscore = weightscore_new
 		return True
 
+
 	"""Updates weightscore with a given value.
 	"""
 	def update_weightscore(self, index, value):
 		self.weightscore[index] = value
+
 
 	"""Returns weightscore at a given index.
 	"""
 	def get_weightscore(self, index):
 		return self.weightscore[index]
 
+
 	"""Returns list of all given weightscores.
 	"""
 	def get_all_weightscore(self):
 		return self.weightscore
+
 
 	"""Quick formula to calculate binomial coefficients (N, k)
 	"""

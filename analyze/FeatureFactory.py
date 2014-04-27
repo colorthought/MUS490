@@ -12,12 +12,13 @@ from operator import itemgetter
 import numpy as np
 from FeatureSet import FeatureSet
 from learning.KMeansGaussian import KMeansGaussian, KMeansHeuristic
+from learning.ClusterFactory import ClusterFactory
 syspath = os.path.dirname(os.path.realpath(__file__))
-outputpath = os.path.abspath('../..') + '/output'
+outputpath = syspath + '/../..' + '/output'
 sys.path.append(os.path.abspath('..'))
 
-from analyze.Analyzer import Analyzer
-from analyze.features import features
+from Analyzer import Analyzer
+from features import features
 
 
 class FeatureFactory:
@@ -31,8 +32,9 @@ class FeatureFactory:
 	k = 0
 	times = 0
 	f = None
+	euclidean = False
 
-	def __init__(self, samplerate, featureList, mp3dirs, k, times, run_before):
+	def __init__(self, samplerate, featureList, mp3dirs, k, times, run_before, euclidean):
 		self.cluster = []
 		self.SAMPLERATE = samplerate
 		self.featureList = featureList
@@ -40,6 +42,7 @@ class FeatureFactory:
 		self.mp3dirs = mp3dirs
 		self.k = k
 		self.times = times
+		self.euclidean = euclidean
 
 		#do mp3_to_feature_vectors and brand new FeatureSet object if this is a new dataset/feature combo
 		if run_before == False:
@@ -74,18 +77,6 @@ class FeatureFactory:
 					if theanalyzer.process_mp3(filename, df) == False:
 						failed_mp3.append(filename)
 					i +=1
-		#second attempt with a separate sample rate (soon deprecated)
-		"""
-		try:
-			for filename in xrange(len(failed_mp3)):
-				os.chdir(failed_dir[filename])
-				theanalyzer = Analyzer(self.samplerate_alt, self.featureList, True)
-				df = theanalyzer.dataFlowCreator()
-				theanalyzer.process_mp3(failed_mp3[filename], df)
-				i += 1
-		except IOError:
-			print("that didn't work either...")
-		"""
 		os.chdir(syspath)
 		print "wrote %d files." % i
 
@@ -94,43 +85,12 @@ class FeatureFactory:
 		Deprecated by CreateMeanCovDiv as of 4-23-14
 	"""
 	def cluster_100(self, weights, auto):
-		w = weights
-		self.f.updateWeights(w)
-
-		clusterlist = []
-		clustercount = []
-		for cl in range(0, self.times):
-			w2 = copy.deepcopy(w)
-			f2 = copy.deepcopy(self.f)
-			km = KMeansGaussian(self.k, 20, "random", False, f2)
-			if auto == True:
-				km = KMeansHeuristic(w2, self.k, 20, "random", False, f2)
-			print
-			print("-------------------------------")
-			print
-			print("Starting kMeans clustering...")
-			print("Iteration #%d" %(cl + 1))
-			clusters = km.run()
-			if clusters not in clusterlist:
-				clusterlist.append(clusters)
-				clustercount.append(1)
-			else:
-				ind = clusterlist.index(clusters)
-				clustercount[ind] += 1
-		clustermax = max(enumerate(clustercount), key=itemgetter(1))[0]
-		finalcluster = clusterlist[clustermax]
-		logging.info(clustercount)
-
-		print
-		for x in xrange(self.k):
-			print
-			print 'Cluster #%d:' % (x + 1)
-			for y in xrange(len(finalcluster[x])):
-				val = finalcluster[x][y]				
-				mp3result = self.f.manifest[val]
-				print '%s' % mp3result
-		this.cluster = finalcluster
-		return finalcluster
+		clusterFactory = ClusterFactory(self.f, self.k, weights, self.euclidean)
+		c = clusterFactory.create_defaultCluster()
+		if self.times == 1:
+			cluster = clusterFactory.run_cluster(c)
+		else: clusterFactory.iterate_cluster(self.times)
+		clusterFactory.print_cluster()
 
 
 if __name__ == '__main__':

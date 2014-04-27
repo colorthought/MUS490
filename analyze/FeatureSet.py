@@ -10,7 +10,8 @@ import numpy as np
 from MeanCovMatrix import MeanCovMatrix
 import stats
 from features import features
-outputpath = os.path.abspath('../..') + '/output'
+syspath = os.path.dirname(os.path.realpath(__file__))
+outputpath = syspath + '/../..' + '/output'
 featurepath = os.path.abspath(outputpath) + '/features'
 
 class FeatureSet(list):

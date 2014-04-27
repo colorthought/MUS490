@@ -38,11 +38,12 @@ if __name__ == '__main__':
 	fe = None
 	run_before = False
 	auto = False
+	euclid = False
 	mp3list = None
 	feature = None
 
 	run = raw_input('Run the same dataset/features as last time? [Y/N]: ') or 'N'
-	if run == 'Y':
+	if run == 'Y' or run == 'y':
 		run_before = True
 		with open('last') as f:
 			feature = f.read()
@@ -66,6 +67,8 @@ if __name__ == '__main__':
 					mp3list[mp3] = "5Albums"
 				if mp3list[mp3] == "Piano" or mp3list[mp3] == "piano":
 					mp3list[mp3] = "ClassicalPiano"
+				if mp3list[mp3] = "nujabes":
+					mp3list[mp3] = "Nujabes"
 				fullpath = mp3path + '/' + mp3list[mp3]
 				if not os.path.exists(fullpath):
 					print("ERORR: one of your directory names does not exist!")
@@ -88,10 +91,12 @@ if __name__ == '__main__':
 	k = int(raw_input('Number of clusters (k): ') or 10)
 	t = int(raw_input('Number of iterations: ') or 1)
 	autoselect = raw_input('Auto select weights? [Y/N]: ') or 'N'
-	if autoselect == 'Y': auto = True
+	euclidean = raw_input('Use Euclidean distance? [Y/N]: ') or 'N'
+	if autoselect == 'Y' or autoselect == 'y': auto = True
+	if euclidean == 'Y' or autoselect == 'y': euclid = True
 	
 	w = [1, 0, 0]
 
 	
-	FeatureFactory = FeatureFactory(44100, fe, mp3list, k, t, run_before)
+	FeatureFactory = FeatureFactory(44100, fe, mp3list, k, t, run_before, euclid)
 	test_cluster(w, auto)
