@@ -67,7 +67,7 @@ if __name__ == '__main__':
 					mp3list[mp3] = "5Albums"
 				if mp3list[mp3] == "Piano" or mp3list[mp3] == "piano":
 					mp3list[mp3] = "ClassicalPiano"
-				if mp3list[mp3] = "nujabes":
+				if mp3list[mp3] == "nujabes":
 					mp3list[mp3] = "Nujabes"
 				fullpath = mp3path + '/' + mp3list[mp3]
 				if not os.path.exists(fullpath):
