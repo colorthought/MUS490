@@ -17,17 +17,20 @@ class ClusterFactory:
 
 	current_cluster = []
 	featureSet = None
-	k = 0
-	auto_k = False
+	times = 1
+	k = None
+	isAutoK = False
 	weight = []
 	auto_weights = False
 	euclidean = False
 
-	def __init__(self, featureSet, k, weight, euclidean):
+	def __init__(self, times, featureSet, k, weight, euclidean):
 		self.featureSet = featureSet
-		self.k = k
+		self.times = times
 		if k == 'auto':
-			self.auto_k = True
+			self.k = 1
+			self.isAutoK = True
+		else: self.k = k
 		self.weight = weight
 		if weight == 'auto':
 			self.auto_weights = True
@@ -40,7 +43,7 @@ class ClusterFactory:
 		if self.auto_weights == True:
 			return KMeansHeuristic(self.weight, self.k, 20, "random", False, f2, self.euclidean)
 		else:
-			return KMeansGaussian(self.k, 20, "random", False, f2, self.euclidean)
+			return KMeansGaussian(self.weight, self.k, 20, "random", False, f2, self.euclidean)
 
 
 	#create cluster with defined parameters; returns cluster object
@@ -48,7 +51,7 @@ class ClusterFactory:
 		f2 = copy.deepcopy(self.featureSet)
 		if self.auto_weights == True:
 			return KMeansHeuristic(weight, k, iterations, "random", False, f2, euclidean)
-		else: return KMeansGaussian(k, iterations, "random", False, f2, euclidean)
+		else: return KMeansGaussian(weight, k, iterations, "random", False, f2, euclidean)
 
 
 	#run cluster; returns cluster[] list
@@ -69,6 +72,8 @@ class ClusterFactory:
 		for cl in range(0, times):
 			print("Iteration #%d" %(cl + 1))
 			cluster = self.run_cluster(km)
+			cluster = sorted(cluster, key = lambda x: len(x))
+			print cluster
 			if cluster not in clusterlist:
 				clusterlist.append(cluster)
 				clustercount.append(1)
@@ -82,13 +87,14 @@ class ClusterFactory:
 
 
 	#prints output of given cluster
-	def print_cluster(self):
+	def print_cluster(self, cluster):
+		print(cluster)
 		print
-		for x in xrange(self.k):
+		for x in xrange(len(cluster)):
 			print
 			print 'Cluster #%d:' % (x + 1)
-			for y in xrange(len(self.current_cluster[x])):
-				val = self.current_cluster[x][y]				
+			for y in xrange(len(cluster[x])):
+				val = cluster[x][y]				
 				mp3result = self.featureSet.manifest[val]
 				print '%s' % mp3result
 
@@ -133,10 +139,19 @@ class ClusterFactory:
 
 		bkm = self.create_customCluster(best_k, 20, self.weight, self.auto_k, self.euclidean)
 		cluster = self.iterate_cluster(30, bkm)
-		self.print_cluster()
+		return cluster
 
-	def run_with_settings():
-		return 1
+
+	"""General runner with init settings.
+	"""
+	def run_with_settings(self):
+		c = self.create_defaultCluster()
+		if self.isAutoK == False:
+			cluster = self.iterate_cluster(self.times, c)
+		else: cluster = self.auto_k()
+		self.print_cluster(cluster)
+
+
 
 if __name__ == '__main__':
 	w = [1, 0, 0]

@@ -29,8 +29,8 @@ class FeatureFactory:
 	mp3dirs = []
 	featureList = None
 	num_features = 0
-	k = 0
-	times = 0
+	k = None
+	times = 1
 	f = None
 	euclidean = False
 
@@ -76,7 +76,7 @@ class FeatureFactory:
 					os.chdir(dirpath)
 					if theanalyzer.process_mp3(filename, df) == False:
 						failed_mp3.append(filename)
-					i +=1
+					i += 1
 		os.chdir(syspath)
 		print "wrote %d files." % i
 
@@ -85,13 +85,8 @@ class FeatureFactory:
 		Deprecated by CreateMeanCovDiv as of 4-23-14
 	"""
 	def cluster_100(self, weights, auto):
-		clusterFactory = ClusterFactory(self.f, self.k, weights, self.euclidean)
-		#c = clusterFactory.create_defaultCluster()
-		#if self.times == 1:
-		#	cluster = clusterFactory.run_cluster(c)
-		#else: clusterFactory.iterate_cluster(self.times)
-		#clusterFactory.print_cluster()
-		clusterFactory.auto_k()
+		clusterFactory = ClusterFactory(self.times, self.f, self.k, weights, self.euclidean)
+		clusterFactory.run_with_settings()
 
 
 if __name__ == '__main__':

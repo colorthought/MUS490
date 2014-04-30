@@ -23,8 +23,9 @@ class KMeansGaussian():
 	precompute = False
 	featureSet = None
 	euclidean = False
+	defaultWeight = None
 
-	def __init__(self, k, max_iter, init, precompute, featureSet, euclidean):
+	def __init__(self, weightvec, k, max_iter, init, precompute, featureSet, euclidean):
 		self.k = k
 		self.max_iter = max_iter
 		self.init = init
@@ -32,6 +33,12 @@ class KMeansGaussian():
 		self.featureSet = featureSet
 		self.clusters = []
 		self.euclidean = euclidean
+
+		weight = Weight(weightvec)
+		weight.gen_subsets()
+		weight.clear_weightscore()
+		self.defaultWeight = copy.deepcopy(weight)
+
 
 		for x in xrange(k): self.clusters.append([])
 
@@ -90,7 +97,7 @@ class KMeansGaussian():
 		for x in xrange(self.featureSet.filecount):
 			cdist = []
 			for y in xrange(self.k):
-				cdist.append(self.centroid_distance(clusters_old[y], x, self.featureSet.weightvector))								#WARNING REFERENCES WEIGHTVECTOR!
+				cdist.append(self.centroid_distance(clusters_old[y], x, self.defaultWeight.weight))								#WARNING REFERENCES WEIGHTVECTOR!
 			logging.debug(cdist)													#[DEBUG]
 
 			#calculate minimum distance between separate bins
@@ -183,11 +190,7 @@ class KMeansHeuristic(KMeansGaussian):
 	defaultWeight = None
 
 	def __init__(self, weightvec, k, max_iter, init, precompute, featureSet, euclidean):
-		KMeansGaussian.__init__(self, k, max_iter, init, precompute, featureSet, euclidean)
-		weight = Weight(weightvec)
-		weight.gen_subsets()
-		weight.clear_weightscore()
-		self.defaultWeight = copy.deepcopy(weight)
+		KMeansGaussian.__init__(self, weightvec, k, max_iter, init, precompute, featureSet, euclidean)
 
 
 	"""Main iteration function for KMeans heuristic.

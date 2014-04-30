@@ -7,6 +7,7 @@ Code may be reused and distributed without permission.
 """
 import sys, os, glob, logging, copy, csv
 import numpy as np
+from numpy import linalg as LA
 from MeanCovMatrix import MeanCovMatrix
 import stats
 from features import features
@@ -146,8 +147,11 @@ class FeatureSet(list):
 				mean1, cov1 = meancovmatrix.recallfromTable(row)
 				mean2, cov2 = meancovmatrix.recallfromTable(col)
 				divergence = stats.kl_DivergenceSymm(mean1, cov1, mean2, cov2)
-				div_format = int(divergence * 100)
-				divMatrix[row][col] = div_format
+				divMatrix[row][col] = divergence
+		norm = LA.norm(divMatrix, 2)
+		divMatrix = divMatrix * float(1/ float(norm))
+
+		#int(divergence * 100)
 
 		logging.debug(divMatrix)
 		return meancovmatrix, divMatrix

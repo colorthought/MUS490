@@ -41,6 +41,8 @@ if __name__ == '__main__':
 	euclid = False
 	mp3list = None
 	feature = None
+	w = [1, 0, 0]
+
 
 	run = raw_input('Run the same dataset/features as last time? [Y/N]: ') or 'N'
 	if run == 'Y' or run == 'y':
@@ -85,17 +87,23 @@ if __name__ == '__main__':
 		fe = features.FEATURE
 	elif feature == '2':
 		fe = features.FEATURE2
-
+	elif feature == '3':
+		fe = features.FEATURE3
 
 	#options for cluster:
-	k = int(raw_input('Number of clusters (k): ') or 10)
+	k = raw_input('Number of clusters (k): ') or 'auto'
+	if k != 'auto':
+		k = int(k)
 	t = int(raw_input('Number of iterations: ') or 1)
-	autoselect = raw_input('Auto select weights? [Y/N]: ') or 'N'
+	weightlist = raw_input('enter weight vector, or auto: ') or '1 0 0'
+	if weightlist == 'auto':
+		w = 'auto'
+	else:
+		w = weightlist.split(" ")
+		w = map(float, w)
 	euclidean = raw_input('Use Euclidean distance? [Y/N]: ') or 'N'
-	if autoselect == 'Y' or autoselect == 'y': auto = True
-	if euclidean == 'Y' or autoselect == 'y': euclid = True
+	if euclidean == 'Y' or euclidean == 'y': euclid = True
 	
-	w = [1, 0, 0]
 
 	
 	FeatureFactory = FeatureFactory(44100, fe, mp3list, k, t, run_before, euclid)
