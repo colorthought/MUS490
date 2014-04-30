@@ -11,14 +11,15 @@ MUS490 is designed to be general and extensible, able to find similarities amids
 
 Planned features in the next iteration include model saving/loading and a second, more advanced auto-weight heuristic.
 
-Sources are 
+Sources for each algorithm are available in the /thesis folder.
 
 #Demo:
 MUS490 includes a demo script to run and test any .mp3 dataset you like. In the tests folder, run ./testAll.sh to select options. Before doing so, place the .mp3 datasets you would like to use in a folder called "mp3," located in MUS490's parent folder. A folder in that location, marked "output," will also be created.
 
 
 ##Dependencies:
-
 MUS490 requires a few dependencies to run correctly.
-**NumPy** http://www.numpy.org
-**Yaafe** http://yaafe.sourceforge.net
+**NumPy:
+http://www.numpy.org
+**Yaafe:
+http://yaafe.sourceforge.net
