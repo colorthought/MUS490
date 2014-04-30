@@ -41,7 +41,7 @@ if __name__ == '__main__':
 	euclid = False
 	mp3list = None
 	feature = None
-	w = [1, 0, 0]
+	w = [1, 0, 0, 0, 0]
 
 
 	run = raw_input('Run the same dataset/features as last time? [Y/N]: ') or 'N'
@@ -89,6 +89,8 @@ if __name__ == '__main__':
 		fe = features.FEATURE2
 	elif feature == '3':
 		fe = features.FEATURE3
+	elif feature == 'stress':
+		fe = features.STRESSTEST
 
 	#options for cluster:
 	k = raw_input('Number of clusters (k): ') or 'auto'

@@ -33,6 +33,7 @@ class ClusterFactory:
 		else: self.k = k
 		self.weight = weight
 		if weight == 'auto':
+			self.weight = [1] * featureSet.num_features
 			self.auto_weights = True
 		self.euclidean = euclidean
 
@@ -88,7 +89,6 @@ class ClusterFactory:
 
 	#prints output of given cluster
 	def print_cluster(self, cluster):
-		print(cluster)
 		print
 		for x in xrange(len(cluster)):
 			print
