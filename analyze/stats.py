@@ -5,8 +5,9 @@ Copyright (c) 2014 Jacob Reske
 For use in MUS491 Senior Project, in partial fulfillment of the Yale College Music Major (INT).
 Code may be reused and distributed without permission.
 """
-import sys, os, csv
+import sys, os, csv, logging
 import numpy as np
+from numpy import linalg as LA
 outputPath = os.path.abspath('../..') + '/output'
 
 
@@ -16,8 +17,24 @@ def csvToMatrix(filename):
 
 
 def matrixToMeanCovariance(matrix):
+	#matrix = np.absolute(matrix)
 	mean = np.mean(matrix, axis=0)
 	covariance = np.cov(matrix, y=None, rowvar=0, bias=0, ddof=None)
+
+	#check that all eigenvalues are positive? THIS IS A HACK. BE VERY ASHAMED.
+	w, v = LA.eig(covariance)
+	EPS = .000001
+	error = 0
+	for i in xrange(len(w)):
+		if w[i] <= 0:
+			error = 1
+			w[i] = EPS
+	diag = np.diag(w)
+	if error == 1:
+		newcov1 = np.multiply(v, diag)
+		newcov = np.multiply(newcov1, np.transpose(v))
+		covariance = newcov
+	logging.debug(covariance)
 	return (mean, covariance)
 
 
@@ -77,7 +94,7 @@ def kl_Divergence(mean1, cov1, mean2, cov2):
 
 
 """Sums Kulback-Liebler divergence values for both mean and covariance matrices,
-to account for KL-divergence being asymmetric (KL(S1, S2) != KL(S2, S2))
+to account for KL-divergence being asymmetric (KL(S1, S2) != KL(S2, S1))
 Used to more accurately approximate distance of Gaussians.
 """
 def kl_DivergenceSymm(mean1, cov1, mean2, cov2):

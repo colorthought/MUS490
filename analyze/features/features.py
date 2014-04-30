@@ -25,11 +25,7 @@ STRESSTEST = ['mfcc: MFCC blockSize=512 stepSize=256',
 'mfcc_d1: MFCC blockSize=512 stepSize=256 > Derivate DOrder=1',
 'mfcc_d2: MFCC blockSize=512 stepSize=256 > Derivate DOrder=2',
 'obsi: OBSI blockSize=512 stepSize=256',
-'am: AmplitudeModulation blockSize=32768 stepSize=16384',
-'autocorr: AutoCorrelation blockSize=512 stepSize=256',
-'onsdet: ComplexDomainOnsetDetection blockSize=512 stepSize=256',
-'lpc: LPC blockSize=512 stepSize=256',
-'secvar: SpectralVariation blockSize=512 stepSize=256']
+'am: AmplitudeModulation blockSize=32768 stepSize=16384',]
 
 
 def getExtension(featureList, index):
@@ -46,4 +42,9 @@ if __name__ == '__main__':
 '''
 'sf: SpectralFlatness blockSize=1024 stepSize=256',
 'sf: SpectralRolloff blockSize=1024 stepSize=256
+
+
+
+'autocorr: AutoCorrelation blockSize=512 stepSize=256',
+'onsdet: ComplexDomainOnsetDetection blockSize=512 stepSize=256'
 '''
