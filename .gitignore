@@ -1,5 +1,11 @@
 *.sublime-project
 *.sublime-workspace
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.log
+*.synctex.gz
 .DS_Store
 *.class
 *.pyc
