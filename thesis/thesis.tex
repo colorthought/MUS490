@@ -1,7 +1,5 @@
-\documentclass[12pt,twocolumn,titlepage]{article}
 
-%\usepackage[margin=.6in]{geometry} % set the margins to 1 inch on all sides
-%\usepackage[left=25mm, right=25mm, top=15mm, bottom=20mm, noheadfoot]{geometry}
+\documentclass[12pt,twocolumn,titlepage]{article}
 
 \usepackage{amsmath}
 \usepackage[pdftex]{graphicx}
@@ -27,6 +25,12 @@
 {\normalfont\large\bfseries\justifyheading}{\thesubsection}{1em}{}
 \usepackage[english]{babel}
 \usepackage{blindtext}
+
+\pdfinfo{
+   /Author (Jacob Reske)
+   /Title  (Unsupervised, Auto K-Means Audio Clustering using Dynamic Weight Selection)
+   /Keywords (unsupervised clustering;k-means;feature selection;Gaussian mixture models;dynamic weight selection;musical instrument recognition;Minkowski Weighted K-means;genre clustering)
+}
 
 
 
@@ -113,8 +117,8 @@ The process is similar to the MFCC computation. For each time step, We partition
 E = log\left(\int_{-\infty}^{+\infty} \mathrm{|x(t)|}^2\, \mathrm{d}t\right) \; \text{for time-series} \; x(t).
 \end{equation}
 
-As with MFCCs, the frequency band is standardized by octaves, so the columns of the resulting matrix are comparable from file to file. We also can compute the log ratio of the first band's energy with each subsequent band to get a matrix of OBSI ratios (labeled OBSIR). The general algorithm for OBSI feature extraction is described in \cite{Essid}. While not as useful for more timbrally complex pieces of music, this feature is especially useful for encoding the differences in power spectrum between instruments or a group of instruments. Below, we reproduce the graph of octave band signal intensity found in \cite{Essid}, comparing the spectra of an alto sax and Bb clarinet.
-%\includegraphics[width=.5\textwidth]{obsi}
+As with MFCCs, the frequency band is standardized by octaves, so the columns of the resulting matrix are comparable from file to file. We also can compute the log ratio of the first band's energy with each subsequent band to get a matrix of OBSI ratios (labeled OBSIR). The general algorithm for OBSI feature extraction is described in \cite{Essid}. While not as useful for more timbrally complex pieces of music, this feature is especially useful for encoding the differences in power spectrum between instruments or a group of instruments. 
+
 \subsection{Amplitude Modulation}
 
 Amplitude modulation attempts to encode two values: the average pitch displacement given constant amplitude (\emph{tremolo}) and the average amplitude displacement given constant pitch (\emph{grain}). \cite{Eronen} For each spectral fame, a modulation of 4 -- 8Hz in tremolo and 10 -- 40Hz for grain are recorded an analyzed. For  each range, the maximum energy is found, and the difference between this and the mean energy in this range is computed. \cite{yaafe} The product of these two values represents the amplitude modulation in this time-frequency range.

@@ -2,7 +2,6 @@
 *.sublime-workspace
 *.aux
 *.bbl
-*.out
 *.blg
 *.fdb_latexmk
 *.log
