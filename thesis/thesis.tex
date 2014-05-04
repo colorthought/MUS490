@@ -1,9 +1,5 @@
 \documentclass[12pt,twocolumn,titlepage]{article}
 
-%Preamble and inline comments go here, brilliant.
-%Very nice way of writing inline commments...
-%get ready to add packages, theorems, and operators here.
-
 %\usepackage[margin=.6in]{geometry} % set the margins to 1 inch on all sides
 %\usepackage[left=25mm, right=25mm, top=15mm, bottom=20mm, noheadfoot]{geometry}
 
@@ -17,10 +13,8 @@
 \usepackage{amsmath}
 \usepackage[boxed]{algorithm2e}
 \usepackage{enumitem}
+\usepackage[]{hyperref}
 \setlist[enumerate]{itemsep=0mm}
-
-%\usepackage{breakurl}
-%\usepackage{multicol}
 
 \pagestyle{fancy}
 \newcommand*{\justifyheading}{\raggedright}
@@ -34,18 +28,43 @@
 \usepackage[english]{babel}
 \usepackage{blindtext}
 
+
+
 \begin{document}
+\begin{titlepage}
+\thispagestyle{empty}
 
+    \begin{center}
+        
+        \Huge
+        \textbf{Unsupervised, Auto K-Means \\Audio Clustering\\using Dynamic Weight Selection} \\
+        \vspace{0.5cm}
+        \Large
+        Jacob Elliot Reske
+        \Large
 
-\title{\huge{\textbf{Unsupervised, Auto K-Means \\Audio Clustering\\using Dynamic Weight Selection}}}
+        \vspace{1.5cm}
+        
+        \large
+        in partial fulfillment of the requirements for the degree of\\
+        \textbf{Bachelor of Arts, Music (INT)}\\
+        at\\
+        \textbf{Yale University}
+        \large
+        \vspace{5.5cm}
+        
+        \includegraphics[width=0.25\textwidth]{yale}
+        
+        \Large
+        \small
+        Department of Music\\
+        Yale University\\
+        New Haven, Connecticut 06511 USA
+        May 3, 2014
+        \small
+    \end{center}
+\end{titlepage}
 
-\author{Jacob Elliot Reske\\
-Department of Music \\
-Yale University \\
-New Haven, Connecticut 06511 USA \\
-Advisors: Prof. Ian Quinn, Prof. Brian Kane }
-
-\maketitle
 
 \textbf{\emph{Abstract} -- Fully unsupervised, automatic clustering by musical features (e.g. timbre, pitch, and rhythm) presents a number of problems. Selecting essential criteria for musical feature extraction, preprocessing the data, and finding similarities in the results introduces typical machine learning problems of overfitting and high dimensionality. The benefits of creating a fully unsupervised clustering algorithm, however, are clear. Fully unsupervised clustering could find unlikely matches in disparate musical styles, as well as a method to process large (or very new) datasets from streaming sources. Music researchers could use this tool to observe similarities in new, uncategorized, or recently digitized music (i.e. without ID3 tags). In this paper, we propose a toolkit that combines a robust musical feature selector and an auto-k, auto-weighted k-means clustering algorithm.}
 
@@ -55,11 +74,13 @@ Advisors: Prof. Ian Quinn, Prof. Brian Kane }
 
 \section{Introduction}
 
+For human beings, music conceptualization is a complicated and multi-layered cognitive process. Categorization is an essential means of distinguishing musical concepts, and it is one of the most preliminary cognitive acts associated with musical listening. \cite{Conceptualizing} An AI that can navigate musical concepts, then, must have some process equivalent to categorization-- placing instruments, songs, or artists in relation to similar music it has encountered before. Like humans, it must be able to construct a model of musical space-- based on the features of sound it thinks are important-- and relate new pieces of music to frameworks in that space. 
 
-This is a test of the LaTex typesetter system.
-We use \emph{this} to write words in italics.
-We use \textbf{this} to type words in bold.
-We use \texttt{this} to set in typewriter font, but this is not usually how you type computer code.
+There are two ways to approach this problem, and they relate to two basic analytical frameworks in machine learning. \emph{Supervised learning} trains on subset of data where the categories are already known, building a model that can categorize future data based on earlier inferences. \emph{Unsupervised learning}, on the other hand, does not use pre-defined labels to construct its model. Its goal is to search for patterns already present in the training data and construct ways of conceptualizing this data further. Much has been written about supervised classification of music; instrument recognition \cite{Essid} and genre classification \cite{MaggbladeHongKao} \cite{LiChan} stand out as the largest problems in the supervised learning domain of music. Because our aim is to develop tools for categorizing music independently-- that is, independent of predefined labels-- we turn to unsupervised learning. A robust automatic clustering tool could be used to find patterns in a large, inter-generic corpus of music that would otherwise be apparent, or ones that normal genre categories might obfuscate. Extracting features based on the audio content itself (independent of metadata) could allow this algorithm to cluster unlabeled music, such as streaming audio, new music, or music in mediums and cultures with unstandardized meta-tags. Musicologists could apply these techniques to discover patterns in timbre, instrumentation, or rhythm that might be difficult to trace on a large corpus of music.
+
+Like most other unsupervised learning problems, music clustering has three essential components. First, \emph{feature extraction} (\ref{sec:feature}) attempts to codify patterns of timbre, rhythm, and pitch in a quantifiable way. We propose three standard features to extract timbre, rhythm, and instrumentation: Mel-frequency cepstrum coefficients, octave band signal intensity, and amplitude modulation. Second, the \emph{preprocessing} step (\ref{sec:preprocessing}) eliminates noise, compresses the (usually large) data per song into feature vectors, and normalizes it for direct comparison. Finally, the \emph{clustering} phase (\ref{sec:clustering}) attempts to locate patterns when the songs are placed in feature space, creating dynamically-sized clusters that model the relationship from one song to another.
+
+Fully automating the clustering step, however, presents some unique problems. Most unsupervised clustering algorithms still require some criteria to be specified beforehand, and picking good weights for all of the features used for clustering is difficult as the number of features increases. To solve this, we modify standard K-means algorithm to automatically choose a good cluster number $k$ and find optimal feature weights for every cluster before running the actual clustering step. in (\ref{sec:testing}), we present the results of auto-k and auto-weight algorithms with our music datasets, and in (\ref{sec:future}) we propose new heuristics to address these results.
 
 
 \section{Feature Extraction}
@@ -69,13 +90,13 @@ The core component of any audio analysis method, the feature extraction phase at
 
 \subsection{Mel-frequency cepstrum coefficients}
 
-Loosely defined, MFCCs attempt to approximate the timbral activity of a given sound or set of sounds. They attempt to represent an audio spectrum as a series of discrete frequency blocks— a cepstral representation— each with their own spectral properties. In an MFCC transformation, each cepstrum is mapped onto the mel scale, a pitch scale designed to space spectral information so that, perceptually, pitches are spaced ``equally'' apart. Our algorithm for converting hertz ($f$) to mels ($m$) uses the formula in \cite{Speechcomm}: 
+Loosely defined, MFCCs attempt to approximate the timbral activity of a given sound or set of sounds. They attempt to represent an audio spectrum as a series of discrete frequency blocks-— a cepstral representation— each with their own spectral properties. In an MFCC transformation, each cepstrum is mapped onto the mel scale, a pitch scale designed to space spectral information so that, perceptually, pitches are spaced ``equally'' apart. Our algorithm for converting hertz ($f$) to mels ($m$) uses the formula in \cite{Speechcomm}: 
 
 \begin{equation}\label{}
 m = 2595 \cdot log_{10}(1 + f/700).
 \end{equation}
 
-The general technique for MFCC computation is as follows: first, the given audio signal is partitioned into windowed segments of width w (specified by the sample size). For each frame, we apply a Fast Fourier Transform. The signal is then converted to a Mel-warped spectrum using X, creating a modified time-frequency window on the mel scale. A triangular filterbank is then applied directly on the resulting signal. Since they are uniformly distributed on the mel scale, each triangular windows is comparable from file to file. \cite{Essid} We then apply a Disrete Cosine Transformation (DCT) to the resulting log of each window's output to get an MFCC vector for that window. We use other techniques, such as spectral mean subtraction, to normalize the vector at this stage. The result is a spectral vector, and its amplitude is the MFCC value for that time and mel-frequency window. At this point, we can also use each MFCC coefficient matrix to create a new matrix of first and second time derivatives, and the lower rows of the new matrix are trimmed to give this new matrix the same shape as the original. 
+The general technique for MFCC computation is as follows: first, the given audio signal is partitioned into windowed segments of width w (specified by the sample size). For each frame, we apply a Fast Fourier Transform. The signal is then converted to a Mel-warped spectrum using X, creating a modified time-frequency window on the mel scale. A triangular filter-bank is then applied directly on the resulting signal. Since they are uniformly distributed on the mel scale, each triangular windows is comparable from file to file. \cite{Essid} We then apply a Discrete Cosine Transformation (DCT) to the resulting log of each window's output to get an MFCC vector for that window. We use other techniques, such as spectral mean subtraction, to normalize the vector at this stage. The result is a spectral vector, and its amplitude is the MFCC value for that time and mel-frequency window. At this point, we can also use each MFCC coefficient matrix to create a new matrix of first and second time derivatives, and the lower rows of the new matrix are trimmed to give this new matrix the same shape as the original. 
 
 
 Mel-frequency cepstrum coefficients are very popular when timbral extraction is needed, and much has been written about general MFCC's utility in speech recognition systems, instrument recognition, and genre classification. However, until recently, MFCCs were considered invariant to other extra-timbral features, such as tempo and key. In their paper,``Genre classification and the invariance of MFCC features to Key and Tempo,'' Tom Li and Antoni Chan suggest that MFCC data does incidentally encode tempo and key information, and that songs performed in atypical keys/tempi were less accurately classified than those with typical traits. What's more, their findings suggest that genre classifiers, like the genres that they model, ``are in fact influenced by the fundamental keys of the instruments involved,'' despite the common intuition that key does not influence genre. \cite{LiChan} We will explore this postulation in our own results section (\ref{sec:testing}).
@@ -92,7 +113,7 @@ The process is similar to the MFCC computation. For each time step, We partition
 E = log\left(\int_{-\infty}^{+\infty} \mathrm{|x(t)|}^2\, \mathrm{d}t\right) \; \text{for time-series} \; x(t).
 \end{equation}
 
-As with MFCCs, the frequency band is standardized by octaves, so the columns of the resulting matrix are comparable from file to file. We also can compute the log ratio of the first band's energy with each subsequent band to get a matrix of OBSI ratios (labeled OBSIR). The general algorithm for OBSI feature extraction is described in \cite{Essid}. While not as useful for more timbrally complex pieces of music, this feature is especially useful for encoding the differences in power spectrum between instruments or a group of instruments. Below, we reproduce the graph of octave band signal intensity found in \cite{Essid}, comparing the spectrums of an alto sax and Bb clarinet.
+As with MFCCs, the frequency band is standardized by octaves, so the columns of the resulting matrix are comparable from file to file. We also can compute the log ratio of the first band's energy with each subsequent band to get a matrix of OBSI ratios (labeled OBSIR). The general algorithm for OBSI feature extraction is described in \cite{Essid}. While not as useful for more timbrally complex pieces of music, this feature is especially useful for encoding the differences in power spectrum between instruments or a group of instruments. Below, we reproduce the graph of octave band signal intensity found in \cite{Essid}, comparing the spectra of an alto sax and Bb clarinet.
 %\includegraphics[width=.5\textwidth]{obsi}
 \subsection{Amplitude Modulation}
 
@@ -105,7 +126,7 @@ Amplitude modulation attempts to encode two values: the average pitch displaceme
 
 \subsection{Mean/covariance pairs}
 
-As described in \ref{sec:feature}, each feature extraction method in the process produces a matrix in $\mathbb{R}^2$ with a high dimension. Since each feature is processed by time step (in our algorithm, the default step size is 256 samples) and thus is composed of n sparse vectors, the resulting matrices are unsuitable for direct comparison. The MFCC extractor, for example, returns an $m\times13$ matrix, where $m \sim 8600$ for a 5:00 minute file. 
+As described in (\ref{sec:feature}), each feature extraction method in the process produces a matrix in $\mathbb{R}^2$ with a high dimension. Since each feature is processed by time step (in our algorithm, the default step size is 256 samples) and thus is composed of n sparse vectors, the resulting matrices are unsuitable for direct comparison. The MFCC extractor, for example, returns an $m\times13$ matrix, where $m \sim 8600$ for a 5:00 minute file. 
 
 
 To remedy this, a sample mean and variance-covariance pair is computed for each set of vectors. We use the standard formula for computing variance-covariance: the mean vector preserves the average value for each column (in the MFCC case, the log spectral partition). The variance-covariance matrix preserves the variances of variables $i$ in position $(x_i, x_i)$, and the covariance between values $i, \;j$ in position $(x_i, x_j)$. The formula for covariance $\mathrm{C}$ is given as:
@@ -182,7 +203,7 @@ In \textbf{4)}, the threshold condition is usually related to the ``inertia'' of
 
 \subsection{Our implementation}
 
-To accommodate our data, a few basic changes had to be made for our K-means implementation. Our \texttt{FeatureSet} object has computed distances between every song in all dimensions, but our representation of features as Gaussians means that these songs' values do not exist as points in any discernible feature space. We only have KL-Divergences that relate feature vectors to each other; this keeps us from computing an explicit $n$-dimensional centroid ``point.'' \cite{MaggbladeHongKao} proposes a solution: defining the centroids of each cluster implicitly, preserving the distance between centroid and point $x$  while eschewing a concrete value for the centroid. Formally, the distance between centroid $C$ and point $y$ is defined as:
+To accommodate our data, a few basic changes had to be made for our K-means implementation. Our \texttt{FeatureSet} object has computed distances between every song in all dimensions, but representing these features as sets of Gaussian distributions does not allow these songs to exist as points in any discernible feature space. We only have KL-Divergences that relate feature vectors to each other; this keeps us from computing an explicit $n$-dimensional centroid ``point.'' \cite{MaggbladeHongKao} proposes a solution: defining the centroids of each cluster implicitly, preserving the distance between centroid and point $x$  while eschewing a concrete value for the centroid. Formally, the distance between centroid $C$ and point $y$ is defined as:
 
 \begin{equation}\label{}
 \mathrm{D}(C, y) = sum_{i \in N}{}{\mathrm{D}(y, x_i) / n} \quad \forall x_i \in X_c.
@@ -293,7 +314,7 @@ In the interest of replicating this data, manifests of each of these datasets' f
 
 \emph{test1\_1}: Our first test is a 2-cluster split of the \texttt{ClassicalPiano} dataset, with the hopes that \texttt{MUS490} splits by instrument type. (The Bach examples are recorded with a harpsichord, while the other three composers' works are played on piano). We run a 2-cluster test using equally weighted MFCCs, along with their first and second derivatives, and iterate until a result is seen at least three times. The results are consistent: \texttt{MUS490} successfully splits into one cluster of harpsichord and one of piano. Closer inspection of the saved divergence matrices confirms that the MFCC divergence is comparatively high for piano/harpsichord pairs. A similar run with the auto-k optimization enabled successfully selects $k = 2$ before splitting into the same cluster as above.
 
-\emph{test1\_2}: In this test, we introduce our auto-k algorithm on the entire piano dataset, one which (minus the Bach) is fairly homogenous on a timbral scale. Despite this, a low p-value is given to induce a higher cluster count, and auto-k splits the dataset into nine clusters with only MFCC data. Precision is high, but (due to the high k-size) recall is low, if artist-splits are the intention; Only a few Rachmaninoff examples are mis-clustered, and those the slower etudes and along with Chopin's nocturnes. The auto-k example reveals something new, however: a startlingly accurate split of the Mozart and Rachmaninoff examples by tempo. With Mozart, for example, we are left with three clusters: one of \emph{allegro} / \emph{presto} movements, one \emph{allegro} / \emph{allegretto}, and a third \emph{andante} / \emph{largo}. This experimentally confirms experimental results in \cite{LiChan} that find evidence of tempo encoding in normal MFCC vectors.
+\emph{test1\_2}: In this test, we introduce our auto-k algorithm on the entire piano dataset, one which (minus the Bach) is fairly homogeneous on a timbral scale. Despite this, a low p-value is given to induce a higher cluster count, and auto-k splits the dataset into nine clusters with only MFCC data. Precision is high, but (due to the high k-size) recall is low, if artist-splits are the intention; Only a few Rachmaninoff examples are mis-clustered, and those the slower etudes and along with Chopin's nocturnes. The auto-k example reveals something new, however: a startlingly accurate split of the Mozart and Rachmaninoff examples by tempo. With Mozart, for example, we are left with three clusters: one of \emph{allegro} / \emph{presto} movements, one \emph{allegro} / \emph{allegretto}, and a third \emph{andante} / \emph{largo}. This experimentally confirms experimental results in \cite{LiChan} that find evidence of tempo encoding in normal MFCC vectors.
 
 \emph{test1\_3}: We run a harder test using \texttt{Instruments} as our test set, once with a fixed set of three and four clusters (one for each instrument group) and once with auto-k clustering. Our first two tests uses even weights for the initial clustering, but other tests weighed OBSI or AM features more heavily than traditional MFCCs.
 
@@ -315,7 +336,7 @@ We present this example, however, to demonstrate two current limitations: lack o
 
 \emph{test3\_1}: This example uses the \texttt{5Albums} dataset to attempt clustering with timbral / generic variance. We do anywhere from a 5-cluster to 8-cluster split over multiple iterations, utilizing all five features with varying weights. Unlike past tests, this test does not often stabilize quickly over multiple iterations, so running it in multiple passes is worthwhile. We observe that clusters are heavily artist-based: both albums by \emph{Chvrches}, \emph{Phosphorescent}, and \emph{Pusha T} always end up as distinct partitions. The timbral and metric variance of the other material usually causes K-means to choose these points as initial centroids. When two artists or genres appear in the same cluster, they are invariably linked by tempo in lieu of timbre. 
 
-\emph{text3\_2}: As a final test, we run using auto-k and auto-weights on \texttt{600Songs}, a set of randomly-chosen songs of 21 distinct genres (according to their ID3 tags' ``genre'' distribution). The goal was to simulate a real-life scenario of auto-k, auto-weighted clustering on an unlabeled dataset where correlations in timbre are not immediately apparent.
+\emph{text3\_2}: As a final test, we run using auto-k and auto-weights on \texttt{600Songs}, a set of randomly-chosen songs of 21 distinct genres (according to their ID3 tags' ``genre'' distribution). The goal was to simulate a real-life scenario of auto-k, auto-weighted clustering on an unlabeled dataset where correlations in timbre are not immediately apparent. Analysis on a 600-song dataset are admittedly difficult to parse, especially with an unlabled dataset with a high variance of artists and genres, but there are some standard patterns. Choral music-- including a cappella and vocal-based pop music-- very often clustered as one unit (Cluster 3, Pass 1 and Cluster 32, Pass 2). Folk music (Cluster 8, Pass 1), acoustic or guitar-driven works (Cluster 40, Pass 2) and music with distinctive voices (Clusters 26-29, Pass 2) were also likely to take up an entire partition. Beyond that, it is difficult to find trends in larger ($>85$-song) clusters, other than to find general genre and tempo patterns (rock, jazz, folk, etc.)
 
 
 \section{Discussion and Future Work}
@@ -345,7 +366,6 @@ For \texttt{MUS490}, K-means was chose for its utility on many types of datasets
 \label{sec:conclusion}
 
 In this paper, we have demonstrated a method of using feature selection techniques and unsupervised machine learning tools to group songs into novel (and often surprising) categories. We have implemented and tested three major feature selection techniques for audio files-- MFCC, OBSI, and AM-- and demonstrated their individual effectiveness in analyzing for timbre. Improvements to the standard K-means algorithm have been proposed and implemented with the goal of full automation-- an important requirement for creating a tool that determines its own criteria for categorizing music. Auto-k and auto-weight features could address K-means' inherent limitations by allowing the algorithm to first assess not only which features are relevant, but how many statistically significant divisions should be made. Our testing has shown that traditional categories, such as instrument type and genre, work well in both the manual and automated versions of this algorithm. In addition, our tests have independently reinforced other researchers' findings that MFCC vectors often encode features in addition to timbre, such as key and tempo features. Our goal is to soon address some of the inherent pitfalls of automated K-means with respect to precision, improve the heuristics for automatic weight selection, and create a parallel implementation for future applications. We hope to create a tool that can facilitate independent music comparison, relational clustering, and move one step closer to an artificial process that can truly, independently conceptualize music.
-
 
 
 \bibliographystyle{plain}
