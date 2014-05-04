@@ -1,6 +1,0 @@
-Log/To Do (4- 25)
-
-- Fix weight object referencing for normal kMeans clustering (Done)
-- Enable options for auto-weight and auto-k (Done)
-- Add DIV matrix normalization (Done)
-- Test on higher-dim featuresets (Done)

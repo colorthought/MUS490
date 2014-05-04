@@ -5,7 +5,6 @@
 *.out
 *.blg
 *.fdb_latexmk
-*.log
 *.synctex.gz
 .DS_Store
 *.class
