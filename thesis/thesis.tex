@@ -84,7 +84,7 @@ There are two ways to approach this problem, and they relate to two basic analyt
 
 Like most other unsupervised learning problems, music clustering has three essential components. First, \emph{feature extraction} (\ref{sec:feature}) attempts to codify patterns of timbre, rhythm, and pitch in a quantifiable way. For our method, we propose three standard features to extract timbre, rhythm, and instrumentation: Mel-frequency cepstrum coefficients, octave band signal intensity, and amplitude modulation. Second, the \emph{preprocessing} step (\ref{sec:preprocessing}) eliminates noise, compresses the (usually large) data per song into feature vectors, and normalizes it for direct comparison. Finally, the \emph{clustering} phase (\ref{sec:clustering}) attempts to locate patterns when the songs are placed in feature space, creating dynamically-sized clusters that model the relationship from one song to another.
 
-Fully automating the clustering step, however, presents some unique problems. Most unsupervised clustering algorithms still require some criteria to be specified beforehand, and picking good weights for each relevant feature becomes harder as the number of features increases. To solve this, we modify standard K-means algorithm to automatically choose a good cluster number $k$ and find optimal feature weights for every cluster before running the actual clustering step. in (\ref{sec:testing}), we present the results of auto-k and auto-weight algorithms with our music datasets, and in (\ref{sec:future}) we propose new heuristics to address these results.
+Fully automating the clustering step, however, presents some unique problems. Most unsupervised clustering algorithms still require some criteria to be specified beforehand, and picking good weights for each relevant feature becomes harder as the number of features increases. To solve this, we modify standard K-means algorithm to automatically choose a good cluster number $k$ and find optimal feature weights for every cluster prior to learning. in (\ref{sec:testing}), we present the results of auto-k and auto-weight algorithms with our music datasets, and in (\ref{sec:future}) we propose new heuristics to address these results.
 
 
 \section{Feature Extraction}
@@ -94,7 +94,7 @@ The core component of any audio analysis method, the feature extraction phase at
 
 \subsection{Mel-frequency cepstrum coefficients}
 
-Loosely defined, MFCCs attempt to approximate the timbral activity of a given sound or set of sounds. They attempt to represent an audio spectrum as a series of discrete frequency blocks-— a cepstral representation— each with their own spectral properties. In an MFCC transformation, each cepstrum is mapped onto the mel scale, a frequency scale designed to space spectral information so that, perceptually, pitches are spaced roughly equally apart. Our algorithm for converting hertz ($f$) to mels ($m$) uses the formula in \cite{Speechcomm}: 
+Loosely defined, MFCCs attempt to approximate the timbral activity of a given sound or set of sounds. They attempt to represent an audio spectrum as a series of discrete frequency blocks-— a cepstral representation— each with their own spectral properties. In an MFCC transformation, each cepstrum is mapped onto the mel scale, a frequency scale designed to space spectral information so that, perceptually, pitches are spaced equally apart. Our algorithm for converting hertz ($f$) to mels ($m$) uses the formula in \cite{Speechcomm}: 
 
 \begin{equation}\label{}
 m = 2595 \cdot log_{10}(1 + f/700).
